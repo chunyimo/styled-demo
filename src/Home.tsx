@@ -1,4 +1,10 @@
 import React from "react";
+import Text from "./components/Text";
+import "./Home.css";
 export default function Home() {
-  return <h2>Home</h2>;
+  return (
+    <div className={"home"}>
+      <Text>Home</Text>
+    </div>
+  );
 }
