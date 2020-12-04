@@ -9,7 +9,7 @@ export const makeGroupedTag = (tag) => {
   return new DefaultGroupedTag(tag);
 };
 
-const BASE_SIZE = 1 << 9;
+const BASE_SIZE = 1 << 9; // 512
 
 class DefaultGroupedTag  {
   groupSizes;
@@ -32,28 +32,33 @@ class DefaultGroupedTag  {
 
     return index;
   }
-
+  // group是一个数值，如果表示的是同一个生命，rules不一样，但group是一样的
+  // 如
+  // .kMTGzd { background: transparent; border-radius: 3px; color: gray; margin: 0px 1em; padding: 0.25em 1em; }
+  // .kOMEcw { background: transparent; border-radius: 3px; border: 2px dashed gray; color: rgb(117, 221, 221); margin: 0px 1em; padding: 0.25em 1em; } 
+  // ? 是如何保证顺序的
   insertRules(group, rules) {
-    if (group >= this.groupSizes.length) {
-      const oldBuffer = this.groupSizes;
-      const oldSize = oldBuffer.length;
+    // groupSizes扩展
+    // if (group >= this.groupSizes.length) {
+    //   const oldBuffer = this.groupSizes;
+    //   const oldSize = oldBuffer.length;
 
-      let newSize = oldSize;
-      while (group >= newSize) {
-        newSize <<= 1;
-        if (newSize < 0) {
-          throwStyledError(16, `${group}`);
-        }
-      }
+    //   let newSize = oldSize;
+    //   while (group >= newSize) {
+    //     newSize <<= 1;
+    //     if (newSize < 0) {
+    //       throwStyledError(16, `${group}`);
+    //     }
+    //   }
 
-      this.groupSizes = new Uint32Array(newSize);
-      this.groupSizes.set(oldBuffer);
-      this.length = newSize;
+    //   this.groupSizes = new Uint32Array(newSize);
+    //   this.groupSizes.set(oldBuffer);
+    //   this.length = newSize;
 
-      for (let i = oldSize; i < newSize; i++) {
-        this.groupSizes[i] = 0;
-      }
-    }
+    //   for (let i = oldSize; i < newSize; i++) {
+    //     this.groupSizes[i] = 0;
+    //   }
+    // }
 
     let ruleIndex = this.indexOfGroup(group + 1);
 

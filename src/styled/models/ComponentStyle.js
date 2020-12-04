@@ -30,7 +30,7 @@ export default class ComponentStyle {
     this.isStatic =
       process.env.NODE_ENV === 'production' &&
       (baseStyle === undefined || baseStyle.isStatic) &&
-      isStaticRules(rules);
+      isStaticRules(rules); // 所有的rule都是非函数的
     this.componentId = componentId;
 
     // SC_VERSION gives us isolation between multiple runtimes on the page at once
@@ -49,6 +49,7 @@ export default class ComponentStyle {
    * Hashes it, wraps the whole chunk in a .hash1234 {}
    * Returns the hash to be injected on render()
    * */
+  // executionContext 包括了context和props
   generateAndInjectStyles(executionContext, styleSheet, stylis) {
     const { componentId } = this;
 
@@ -98,7 +99,24 @@ export default class ComponentStyle {
         const name = generateName(dynamicHash >>> 0);
 
         if (!styleSheet.hasNameForId(componentId, name)) {
+          // css
+          /* 
+            "
+              background: transparent;
+              border-radius: 3px;
+              border: 2px undefined gray;
+              color: gray;
+              margin: 0 1em;
+              padding: 0.25em 1em;
+            "
+          */
+
+
+          // stylis预处理之后，生成css ，如
+          // .kOMEcw{background:transparent;border-radius:3px;border:2px dashed gray;color:#75dddd;margin:0 1em;padding:0.25em 1em;}
+    
           const cssFormatted = stylis(css, `.${name}`, undefined, componentId);
+          // TODO 看到插入rules
           styleSheet.insertRules(componentId, name, cssFormatted);
         }
 

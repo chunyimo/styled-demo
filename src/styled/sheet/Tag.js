@@ -22,11 +22,13 @@ export class CSSOMTag {
   length;
 
   constructor(target) {
+    // makeStyleTag 生成style标签，如
+    // <style data-styled="active" data-styled-version="__VERSION__" nonce="__webpack_nonce__"></style>
     const element = (this.element = makeStyleTag(target));
 
     // Avoid Edge bug where empty style elements don't create sheets
     element.appendChild(document.createTextNode(''));
-
+    // 获取标签的sheet属性
     this.sheet = getSheet(element);
     this.length = 0;
   }

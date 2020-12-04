@@ -2,12 +2,9 @@
 /* Import singletons */
 import isStyledComponent from './utils/isStyledComponent';
 import css from './constructors/css';
-import createGlobalStyle from './constructors/createGlobalStyle';
-import keyframes from './constructors/keyframes';
-import ServerStyleSheet from './models/ServerStyleSheet';
 import { SC_VERSION } from './constants';
 
-import StyleSheetManager, {
+import  {
   StyleSheetContext,
   StyleSheetConsumer,
 } from './models/StyleSheetManager';
@@ -57,14 +54,10 @@ if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test' && 
 /* Export everything */
 export * from './secretInternals';
 export {
-  createGlobalStyle,
   css,
   isStyledComponent,
-  keyframes,
-  ServerStyleSheet,
   StyleSheetConsumer,
   StyleSheetContext,
-  StyleSheetManager,
   ThemeConsumer,
   ThemeContext,
   ThemeProvider,

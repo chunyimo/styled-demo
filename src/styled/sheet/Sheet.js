@@ -72,6 +72,8 @@ export default class StyleSheet {
 
   /** Lazily initialises a GroupedTag for when it's actually needed */
   getTag() {
+    const _thisTag = this.tag;
+    // makeTag返回一个包含style标签的CSSOMTag
     return this.tag || (this.tag = makeGroupedTag(makeTag(this.options)));
   }
 
@@ -94,8 +96,13 @@ export default class StyleSheet {
   }
 
   /** Insert new rules which also marks the name as known */
+  // TODO 如何插入CSS
+  //  styleSheet.insertRules(componentId, name, cssFormatted);
   insertRules(id, name, rules) {
+    const _tag = this.getTag();
+    const _id = getGroupForId(id);
     this.registerName(id, name);
+    // 此处id 即为componentId，在样式声明时就已经确定好了
     this.getTag().insertRules(getGroupForId(id), rules);
   }
 
@@ -119,8 +126,4 @@ export default class StyleSheet {
     this.tag = undefined;
   }
 
-  /** Outputs the current sheet as a CSS string with markers for SSR */
-  toString() {
-    return outputSheet(this);
-  }
 }

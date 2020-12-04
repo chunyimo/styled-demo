@@ -1,5 +1,5 @@
 
-
+// 是否是原生的dom标签
 export default function isTag(
   target
 )  {

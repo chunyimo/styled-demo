@@ -71,10 +71,14 @@ export default function createStylisInstance({
 
     middlewares.push(selfReferenceReplacementPlugin, stringify);
 
-    return serialize(
+    const serializeResult = serialize(
       compile(prefix || selector ? `${prefix} ${selector} { ${flatCSS} }` : flatCSS),
       middleware(middlewares)
     );
+    console.log("serializeResult: ", serializeResult)
+    // stylis预处理之后，生成css ，如
+    // .kOMEcw{background:transparent;border-radius:3px;border:2px dashed gray;color:#75dddd;margin:0 1em;padding:0.25em 1em;}
+    return serializeResult
   }
 
   stringifyRules.hash = plugins.length

@@ -1,22 +1,17 @@
 
 import validAttr from '@emotion/is-prop-valid';
-import hoist from 'hoist-non-react-statics';
 import React, { createElement, type , useContext, useDebugValue } from 'react';
 import { SC_VERSION } from '../constants';
-import { checkDynamicCreation } from '../utils/checkDynamicCreation';
-import createWarnTooManyClasses from '../utils/createWarnTooManyClasses';
 import determineTheme from '../utils/determineTheme';
 import domElements from '../utils/domElements';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '../utils/empties';
 import escape from '../utils/escape';
 import generateComponentId from '../utils/generateComponentId';
 import generateDisplayName from '../utils/generateDisplayName';
-import getComponentName from '../utils/getComponentName';
 import isFunction from '../utils/isFunction';
 import isStyledComponent from '../utils/isStyledComponent';
 import isTag from '../utils/isTag';
 import joinStrings from '../utils/joinStrings';
-import merge from '../utils/mixinDeep';
 import ComponentStyle from './ComponentStyle';
 import { useStyleSheet, useStylis } from './StyleSheetManager';
 import { ThemeContext } from './ThemeProvider';
@@ -28,16 +23,24 @@ function generateId(displayName, parentComponentId) {
   const name = typeof displayName !== 'string' ? 'sc' : escape(displayName);
   // Ensure that no displayName can lead to duplicate componentIds
   identifiers[name] = (identifiers[name] || 0) + 1;
-
+  const _SC_VERSION = SC_VERSION;
   const componentId = `${name}-${generateComponentId(
     // SC_VERSION gives us isolation between multiple runtimes on the page at once
     // this is improved further with use of the babel plugin "namespace" feature
-    SC_VERSION + name + identifiers[name]
+    _SC_VERSION + name + identifiers[name]
   )}`;
 
   return parentComponentId ? `${parentComponentId}-${componentId}` : componentId;
 }
 
+/**
+ *? 不知道这个函数是干什么的？
+ *
+ * @param {*} [theme=EMPTY_OBJECT]
+ * @param {*} props
+ * @param {*} [attrs=[]]
+ * @return {*} 
+ */
 function useResolvedAttrs(theme = EMPTY_OBJECT, props, attrs = []) {
   // NOTE: can't memoize this
   // returns [context, resolvedAttrs]
@@ -69,28 +72,21 @@ function useResolvedAttrs(theme = EMPTY_OBJECT, props, attrs = []) {
 }
 
 function useInjectedStyle(
-  componentStyle,
+  componentStyle, // 组件的样式信息
   isStatic,
-  resolvedAttrs,
+  resolvedAttrs, // context 包括theme props
   warnTooManyClasses
 ) {
+  // 获取styleSheet，一个空的styleSheet模板
   const styleSheet = useStyleSheet();
   const stylis = useStylis();
 
   const className = isStatic
     ? componentStyle.generateAndInjectStyles(EMPTY_OBJECT, styleSheet, stylis)
     : componentStyle.generateAndInjectStyles(resolvedAttrs, styleSheet, stylis);
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  if (process.env.NODE_ENV !== 'production') useDebugValue(className);
-
-  if (process.env.NODE_ENV !== 'production' && !isStatic && warnTooManyClasses) {
-    warnTooManyClasses(className);
-  }
-
   return className;
 }
-
+// 该函数在组件渲染的时候会执行
 function useStyledComponentImpl(
   forwardedComponent,
   props,
@@ -99,22 +95,25 @@ function useStyledComponentImpl(
 ) {
   const {
     attrs: componentAttrs,
-    componentStyle,
+    componentStyle, // 组件的样式信息
     defaultProps,
     foldedComponentIds,
     shouldForwardProp,
     styledComponentId,
     target,
   } = forwardedComponent;
-
+  
   // eslint-disable-next-line react-hooks/rules-of-hooks
   if (process.env.NODE_ENV !== 'production') useDebugValue(styledComponentId);
 
   // NOTE: the non-hooks version only subscribes to this when !componentStyle.isStatic,
   // but that'd be against the rules-of-hooks. We could be naughty and do it anyway as it
   // should be an immutable value, but behave for now.
+  /**
+   * 决定theme的由来 
+   * @type {*} */
   const theme = determineTheme(props, useContext(ThemeContext), defaultProps);
-
+  // attrs 可以认为是css attr函数的处理
   const [context, attrs] = useResolvedAttrs(theme || EMPTY_OBJECT, props, componentAttrs);
 
   const generatedClassName = useInjectedStyle(
@@ -125,8 +124,8 @@ function useStyledComponentImpl(
   );
 
   const refToForward = forwardedRef;
-
-  const elementToBeCreated = attrs.$as || props.$as || attrs.as || props.as || target;
+  const elementToBeCreated =  target;
+  // const elementToBeCreated = target;
 
   const isTargetTag = isTag(elementToBeCreated);
   const computedProps = attrs !== props ? { ...props, ...attrs } : props;
@@ -134,21 +133,14 @@ function useStyledComponentImpl(
 
   // eslint-disable-next-line guard-for-in
   for (const key in computedProps) {
-    if (key[0] === '$' || key === 'as') continue;
-    else if (key === 'forwardedAs') {
-      propsForElement.as = computedProps[key];
-    } else if (
-      shouldForwardProp ? shouldForwardProp(key, validAttr) : isTargetTag ? validAttr(key) : true
-    ) {
       // Don't pass through non HTML tags through to HTML elements
       propsForElement[key] = computedProps[key];
-    }
   }
 
   if (props.style && attrs.style !== props.style) {
     propsForElement.style = { ...props.style, ...attrs.style };
   }
-
+  // 主要是加上className
   propsForElement[
     // handle custom elements which React doesn't properly alias
     isTargetTag && domElements.indexOf(elementToBeCreated) === -1 ? 'class' : 'className'
@@ -166,7 +158,14 @@ function useStyledComponentImpl(
 
   return createElement(elementToBeCreated, propsForElement);
 }
-// componentConstructor
+// componentConstructor 相当于 styled.button
+/*
+templateFunction 相当于 styled.button
+const templateFunction = (...args) => {
+  return createStyledComponent(tag, options, css(...args));
+} 
+
+*/
 export default function createStyledComponent(
   target,
   options,
@@ -189,28 +188,13 @@ export default function createStyledComponent(
       : options.componentId || componentId;
 
   // fold the underlying StyledComponent attrs up (implicit extend)
+  // 目前尚未明白 ((target)).attrs 不为null 的情况
   const finalAttrs =
     isTargetStyledComp && ((target)).attrs
       ? ((target)).attrs.concat(attrs).filter(Boolean) : null
       ;
 
-  // eslint-disable-next-line prefer-destructuring
-  let shouldForwardProp = options.shouldForwardProp;
-
-  if (isTargetStyledComp && target.shouldForwardProp) {
-    if (options.shouldForwardProp) {
-      // compose nested shouldForwardProp calls
-      shouldForwardProp = (prop, filterFn) =>
-        ((((target)).shouldForwardProp))(
-          prop,
-          filterFn
-        ) && ((options.shouldForwardProp))(prop, filterFn);
-    } else {
-      // eslint-disable-next-line prefer-destructuring
-      shouldForwardProp = ((target)).shouldForwardProp;
-    }
-  }
-
+  // 记录style信息的实例,在声明组件样式的时候，就记录了该信息
   const componentStyle = new ComponentStyle(
     rules,
     styledComponentId,
@@ -222,7 +206,7 @@ export default function createStyledComponent(
   const isStatic = componentStyle.isStatic && attrs.length === 0;
 
   /**
-   * forwardRef creates a new interim component, which we'll take advantage of
+   * forwardRef creates a new interim（中间的，临时的） component, which we'll take advantage of
    * instead of extending ParentComponent to create _another_ interim class
    */
   let WrappedStyledComponent;
@@ -232,12 +216,11 @@ export default function createStyledComponent(
     useStyledComponentImpl(WrappedStyledComponent, props, ref, isStatic);
 
   forwardRef.displayName = displayName;
-
+  // 使用高阶组件进行包裹，将声明的样式保存在比包之中，当组件渲染的时候，将样式插入style sheet。
   WrappedStyledComponent = ((React.forwardRef(forwardRef)));
   WrappedStyledComponent.attrs = finalAttrs;
   WrappedStyledComponent.componentStyle = componentStyle;
   WrappedStyledComponent.displayName = displayName;
-  WrappedStyledComponent.shouldForwardProp = shouldForwardProp;
 
   // this static is used to preserve the cascade of static classes for component selector
   // purposes; this is especially important with usage of the css prop
@@ -253,59 +236,5 @@ export default function createStyledComponent(
   WrappedStyledComponent.target = isTargetStyledComp
     ? ((target)).target
     : target;
-
-  WrappedStyledComponent.withComponent = function withComponent(tag) {
-    const { componentId: previousComponentId, ...optionsToCopy } = options;
-
-    const newComponentId =
-      previousComponentId &&
-      `${previousComponentId}-${isTag(tag) ? tag : escape(getComponentName(tag))}`;
-
-    const newOptions = {
-      ...optionsToCopy,
-      attrs: finalAttrs,
-      componentId: newComponentId,
-    };
-
-    return createStyledComponent(tag, newOptions, rules);
-  };
-
-  Object.defineProperty(WrappedStyledComponent, 'defaultProps', {
-    get() {
-      return this._foldedDefaultProps;
-    },
-
-    set(obj) {
-      this._foldedDefaultProps = isTargetStyledComp
-        ? merge({}, ((target)).defaultProps, obj)
-        : obj;
-    },
-  });
-
-  if (process.env.NODE_ENV !== 'production') {
-    checkDynamicCreation(displayName, styledComponentId);
-
-    WrappedStyledComponent.warnTooManyClasses = createWarnTooManyClasses(
-      displayName,
-      styledComponentId
-    );
-  }
-
-  WrappedStyledComponent.toString = () => `.${WrappedStyledComponent.styledComponentId}`;
-
-  if (isCompositeComponent) {
-    hoist(WrappedStyledComponent, ((target)), {
-      // all SC-specific things should not be hoisted
-      attrs: true,
-      componentStyle: true,
-      displayName: true,
-      foldedComponentIds: true,
-      shouldForwardProp: true,
-      styledComponentId: true,
-      target: true,
-      withComponent: true,
-    });
-  }
-
   return WrappedStyledComponent;
 }

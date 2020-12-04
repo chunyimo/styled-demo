@@ -5,7 +5,6 @@ import isFunction from './isFunction';
 import isStatelessFunction from './isStatelessFunction';
 import isPlainObject from './isPlainObject';
 import isStyledComponent from './isStyledComponent';
-import Keyframes from '../models/Keyframes';
 import hyphenate from './hyphenateStyleName';
 import addUnitIfNeeded from './addUnitIfNeeded';
 
@@ -51,12 +50,13 @@ export default function flatten(
 
     return ruleSet;
   }
-
+  // chunk 为undefined、null 、‘’ 返回 空字符串
   if (isFalsish(chunk)) {
     return '';
   }
 
   /* Handle other components */
+  // 是否有styledComponentId
   if (isStyledComponent(chunk)) {
     return `.${chunk.styledComponentId}`;
   }
@@ -79,13 +79,7 @@ export default function flatten(
     } else return chunk;
   }
 
-  if (chunk instanceof Keyframes) {
-    if (styleSheet) {
-      chunk.inject(styleSheet, stylisInstance);
-      return chunk.getName(stylisInstance);
-    } else return chunk;
-  }
-
   /* Handle objects */
-  return isPlainObject(chunk) ? objToCssArray(chunk) : chunk.toString();
+  const _isPlainObject = isPlainObject(chunk)
+  return _isPlainObject ? objToCssArray(chunk) : chunk.toString();
 }

@@ -22,54 +22,58 @@ export const masterSheet = new StyleSheet();
 export const masterStylis = createStylisInstance();
 
 export function useStyleSheet() {
-  return useContext(StyleSheetContext) || masterSheet;
+  const _StyleSheetContext = useContext(StyleSheetContext);
+  console.log(masterSheet);
+  return _StyleSheetContext || masterSheet;
 }
 
 export function useStylis() {
-  return useContext(StylisContext) || masterStylis;
+  const _StylisContext = useContext(StylisContext);
+  console.log(masterStylis);
+  return _StylisContext || masterStylis;
 }
 
-export default function StyleSheetManager(props) {
-  const [plugins, setPlugins] = useState(props.stylisPlugins);
-  const contextStyleSheet = useStyleSheet();
+// export default function StyleSheetManager(props) {
+//   const [plugins, setPlugins] = useState(props.stylisPlugins);
+//   const contextStyleSheet = useStyleSheet();
 
-  const styleSheet = useMemo(() => {
-    let sheet = contextStyleSheet;
+//   const styleSheet = useMemo(() => {
+//     let sheet = contextStyleSheet;
 
-    if (props.sheet) {
-      // eslint-disable-next-line prefer-destructuring
-      sheet = props.sheet;
-    } else if (props.target) {
-      sheet = sheet.reconstructWithOptions({ target: props.target }, false);
-    }
+//     if (props.sheet) {
+//       // eslint-disable-next-line prefer-destructuring
+//       sheet = props.sheet;
+//     } else if (props.target) {
+//       sheet = sheet.reconstructWithOptions({ target: props.target }, false);
+//     }
 
-    if (props.disableCSSOMInjection) {
-      sheet = sheet.reconstructWithOptions({ useCSSOMInjection: false });
-    }
+//     if (props.disableCSSOMInjection) {
+//       sheet = sheet.reconstructWithOptions({ useCSSOMInjection: false });
+//     }
 
-    return sheet;
-  }, [props.disableCSSOMInjection, props.sheet, props.target]);
+//     return sheet;
+//   }, [props.disableCSSOMInjection, props.sheet, props.target]);
 
-  const stylis = useMemo(
-    () =>
-      createStylisInstance({
-        options: { prefix: !props.disableVendorPrefixes },
-        plugins,
-      }),
-    [props.disableVendorPrefixes, plugins]
-  );
+//   const stylis = useMemo(
+//     () =>
+//       createStylisInstance({
+//         options: { prefix: !props.disableVendorPrefixes },
+//         plugins,
+//       }),
+//     [props.disableVendorPrefixes, plugins]
+//   );
 
-  useEffect(() => {
-    if (!shallowequal(plugins, props.stylisPlugins)) setPlugins(props.stylisPlugins);
-  }, [props.stylisPlugins]);
+//   useEffect(() => {
+//     if (!shallowequal(plugins, props.stylisPlugins)) setPlugins(props.stylisPlugins);
+//   }, [props.stylisPlugins]);
 
-  return (
-    <StyleSheetContext.Provider value={styleSheet}>
-      <StylisContext.Provider value={stylis}>
-        {process.env.NODE_ENV !== 'production'
-          ? React.Children.only(props.children)
-          : props.children}
-      </StylisContext.Provider>
-    </StyleSheetContext.Provider>
-  );
-}
+//   return (
+//     <StyleSheetContext.Provider value={styleSheet}>
+//       <StylisContext.Provider value={stylis}>
+//         {process.env.NODE_ENV !== 'production'
+//           ? React.Children.only(props.children)
+//           : props.children}
+//       </StylisContext.Provider>
+//     </StyleSheetContext.Provider>
+//   );
+// }

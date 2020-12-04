@@ -6,37 +6,6 @@ import { getIdForGroup, setGroupForId } from './GroupIDAllocator';
 const SELECTOR = `style[${SC_ATTR}][${SC_ATTR_VERSION}="${SC_VERSION}"]`;
 const MARKER_RE = new RegExp(`^${SC_ATTR}\\.g(\\d+)\\[id="([\\w\\d-]+)"\\].*?"([^"]*)`);
 
-export const outputSheet = (sheet) => {
-  const tag = sheet.getTag();
-  const { length } = tag;
-
-  let css = '';
-  for (let group = 0; group < length; group++) {
-    const id = getIdForGroup(group);
-    if (id === undefined) continue;
-
-    const names = sheet.names.get(id);
-    const rules = tag.getGroup(group);
-    if (names === undefined || rules.length === 0) continue;
-
-    const selector = `${SC_ATTR}.g${group}[id="${id}"]`;
-
-    let content = '';
-    if (names !== undefined) {
-      names.forEach(name => {
-        if (name.length > 0) {
-          content += `${name},`;
-        }
-      });
-    }
-
-    // NOTE: It's easier to collect rules and have the marker
-    // after the actual rules to simplify the rehydration
-    css += `${rules}${selector}{content:"${content}"}${SPLITTER}`;
-  }
-
-  return css;
-};
 
 const rehydrateNamesFromContent = (sheet, id, content) => {
   const names = content.split(',');
