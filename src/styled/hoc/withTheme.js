@@ -12,6 +12,7 @@ import getComponentName from '../utils/getComponentName';
 //
 // but the old build system tooling doesn't support the syntax
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default (Component) => {
   // $FlowFixMe This should be React.forwardRef<Config, Instance>
   const WithTheme = React.forwardRef((props, ref) => {

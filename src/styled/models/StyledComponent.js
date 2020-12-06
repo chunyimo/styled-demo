@@ -188,7 +188,7 @@ export default function createStyledComponent(
       : options.componentId || componentId;
 
   // fold the underlying StyledComponent attrs up (implicit extend)
-  // 目前尚未明白 ((target)).attrs 不为null 的情况
+  // 和css attr挂钩，
   const finalAttrs =
     isTargetStyledComp && ((target)).attrs
       ? ((target)).attrs.concat(attrs).filter(Boolean) : null

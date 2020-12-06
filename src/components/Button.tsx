@@ -1,7 +1,7 @@
-import styled from "../styled/index";
-import { css } from "styled-components";
-import { Button as MButton } from "@material-ui/core";
-import { styled as Mstyled } from "@material-ui/styles";
+import styled from '../styled/index';
+import { css } from 'styled-components';
+import { Button as MButton } from '@material-ui/core';
+import { styled as Mstyled } from '@material-ui/styles';
 const borderStyle = (bt: any) => `2px ${bt} gray`;
 // const sbtn = styled.button.attrs({ type: "button" })`
 //   color: white;
@@ -12,15 +12,16 @@ const borderStyle = (bt: any) => `2px ${bt} gray`;
 //   .attrs({ cus: "SSbtn" })`
 //   color: red;
 // `;
-export const Button = styled("button")`
+// @ts-ignore
+export const Button = styled.button`
   background: transparent;
   border-radius: 3px;
   border: ${(props: any) => borderStyle(props.bt)};
-  color: ${(props: any) => (props.primary ? "#75dddd" : "gray")};
+  color: ${(props: any) => (props.primary ? '#75dddd' : 'gray')};
   margin: 0 1em;
   padding: 0.25em 1em;
 `;
-
+// @ts-ignore
 export const Whitea = styled.a`
   color: white;
 `;
@@ -28,12 +29,12 @@ export const Whitea = styled.a`
 export const BaseButton = (props: any) => {
   return <Button {...props} />;
 };
-
+// @ts-ignore
 export const PrimaryButton = styled(Button)`
   background: #75dddd;
   color: white;
 `;
 
 export const PinkButton = Mstyled(MButton)({
-  background: "pink",
+  background: 'pink',
 });
