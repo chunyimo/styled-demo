@@ -75,7 +75,6 @@ function useInjectedStyle(
   componentStyle, // 组件的样式信息
   isStatic,
   resolvedAttrs, // context 包括theme props
-  warnTooManyClasses
 ) {
   // 获取styleSheet，一个空的styleSheet模板
   const styleSheet = useStyleSheet();
