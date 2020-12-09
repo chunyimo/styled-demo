@@ -177,6 +177,7 @@ export default function createStyledComponent(
 
   const {
     attrs = EMPTY_ARRAY,
+    // 与初始化的顺序有关
     componentId = generateId(options.displayName, options.parentComponentId),
     displayName = generateDisplayName(target),
   } = options;

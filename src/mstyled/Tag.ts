@@ -13,6 +13,7 @@ export class CSSOMTag {
   constructor(target: any) {
     // makeStyleTag 生成style标签，如
     // <style data-styled="active" data-styled-version="__VERSION__" nonce="__webpack_nonce__"></style>
+    // !插入style标签
     const element = (this.element = makeStyleTag(target));
 
     // Avoid Edge bug where empty style elements don't create sheets

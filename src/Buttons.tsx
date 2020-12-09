@@ -21,6 +21,8 @@ export default function Buttons() {
     <div className={"home"}>
       <h3>Buttons</h3>
       <div>
+        <h1>Styled Components</h1>
+        <Whitea>hahah</Whitea>
         <Button type="button">Base Button</Button>
         <PrimaryButton>Primary button</PrimaryButton>
         <BaseButton
@@ -30,11 +32,12 @@ export default function Buttons() {
         >
           Base Button
         </BaseButton>
-        <Whitea>hahah</Whitea>
+        <h1>Material UI</h1>
         <PinkButton>PinkButton</PinkButton>
-        <CustomButton>CustomButton</CustomButton>
+        <h1>Weak chicken Styled component</h1>
+        <CustomButton>CustomButton1</CustomButton>
         <CustomButton onClick={toggle} f32={fontSizeToggle}>
-          CustomButton
+          CustomButton2
         </CustomButton>
       </div>
     </div>

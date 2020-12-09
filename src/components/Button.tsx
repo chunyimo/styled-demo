@@ -14,6 +14,10 @@ const borderStyle = (bt: any) => `6px ${bt} gray`;
 //   color: red;
 // `;
 // @ts-ignore
+export const Whitea = styled.a`
+  color: white;
+`;
+// @ts-ignore
 export const Button = styled.button`
   background: transparent;
   border-radius: 3px;
@@ -21,10 +25,6 @@ export const Button = styled.button`
   color: ${(props: any) => (props.primary ? "#75dddd" : "gray")};
   margin: 0 1em;
   padding: 0.25em 1em;
-`;
-// @ts-ignore
-export const Whitea = styled.a`
-  color: white;
 `;
 
 export const BaseButton = (props: any) => {

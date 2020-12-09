@@ -23,7 +23,7 @@ export default class ComponentStyle {
   rules;
 
   staticRulesId;
-
+  // styled(ComponentA)，baseStyle 表示的是ComponentA具备的样式
   constructor(rules, componentId, baseStyle) {
     this.rules = rules;
     this.staticRulesId = '';
@@ -57,6 +57,7 @@ export default class ComponentStyle {
 
     if (this.baseStyle) {
       names.push(this.baseStyle.generateAndInjectStyles(executionContext, styleSheet, stylis));
+      console.log("names1: ", names);
     }
 
     // force dynamic classnames if user-supplied stylis plugins are in use
@@ -123,7 +124,7 @@ export default class ComponentStyle {
         names.push(name);
       }
     }
-
+    console.log("names2: ", names);
     return names.join(' ');
   }
 }

@@ -90,6 +90,7 @@ export default class StyleSheet {
       const groupNames = new Set();
       groupNames.add(name);
       this.names.set(id, groupNames);
+      console.log("groupNames: ", this.names);
     } else {
       (this.names.get(id)).add(name);
     }
