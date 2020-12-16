@@ -3,6 +3,7 @@ import { css } from "styled-components";
 import { Button as MButton } from "@material-ui/core";
 import { styled as Mstyled } from "@material-ui/styles";
 import mstyled from "../mstyled";
+import React from "react";
 const borderStyle = (bt: any) => `6px ${bt} gray`;
 // const sbtn = styled.button.attrs({ type: "button" })`
 //   color: white;
@@ -15,7 +16,7 @@ const borderStyle = (bt: any) => `6px ${bt} gray`;
 // `;
 // @ts-ignore
 export const Whitea = styled.a`
-  color: white;
+  color: red;
 `;
 // @ts-ignore
 export const Button = styled.button`
